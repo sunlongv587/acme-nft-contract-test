@@ -2891,7 +2891,7 @@
 					"parameterSlots": 0,
 					"returnSlots": 0
 				},
-				"@_mintNicMeta_2176": {
+				"@_mintAcmeMeta_2176": {
 					"entryPoint": 8802,
 					"id": 2176,
 					"parameterSlots": 1,
@@ -3023,7 +3023,7 @@
 					"parameterSlots": 0,
 					"returnSlots": 0
 				},
-				"@mintNicMeta_2141": {
+				"@mintAcmeMeta_2141": {
 					"entryPoint": 4895,
 					"id": 2141,
 					"parameterSlots": 1,
@@ -22454,7 +22454,7 @@
 				"isApprovedForAll(address,address)": "infinite",
 				"maxBalance()": "2541",
 				"maxMint()": "2474",
-				"mintNicMeta(uint256)": "infinite",
+				"mintAcmeMeta(uint256)": "infinite",
 				"mintPrice()": "2540",
 				"name()": "infinite",
 				"notRevealedUri()": "infinite",
@@ -22482,7 +22482,7 @@
 			},
 			"internal": {
 				"_baseURI()": "infinite",
-				"_mintNicMeta(uint256)": "infinite"
+				"_mintAcmeMeta(uint256)": "infinite"
 			}
 		},
 		"methodIdentifiers": {
@@ -22499,7 +22499,7 @@
 			"isApprovedForAll(address,address)": "e985e9c5",
 			"maxBalance()": "73ad468a",
 			"maxMint()": "7501f741",
-			"mintNicMeta(uint256)": "9b79e16d",
+			"mintAcmeMeta(uint256)": "9b79e16d",
 			"mintPrice()": "6817c76c",
 			"name()": "06fdde03",
 			"notRevealedUri()": "081c8c44",
@@ -22830,7 +22830,7 @@
 					"type": "uint256"
 				}
 			],
-			"name": "mintNicMeta",
+			"name": "mintAcmeMeta",
 			"outputs": [],
 			"stateMutability": "payable",
 			"type": "function"

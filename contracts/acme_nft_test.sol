@@ -31,12 +31,12 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
         setNotRevealedURI(initNotRevealedUri);
     }
 
-    function mintNicMeta(uint256 tokenQuantity) public payable {
+    function mintAcmeMeta(uint256 tokenQuantity) public payable {
         require(
             totalSupply() + tokenQuantity <= MAX_SUPPLY,
             "Sale would exceed max supply"
         );
-        require(_isSaleActive, "Sale must be active to mint NicMetas");
+        require(_isSaleActive, "Sale must be active to mint AcmeMetas");
         require(
             balanceOf(msg.sender) + tokenQuantity <= maxBalance,
             "Sale would exceed max balance"
@@ -47,10 +47,10 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
         );
         require(tokenQuantity <= maxMint, "Can only mint 1 tokens at a time");
 
-        _mintNicMeta(tokenQuantity);
+        _mintAcmeMeta(tokenQuantity);
     }
 
-    function _mintNicMeta(uint256 tokenQuantity) internal {
+    function _mintAcmeMeta(uint256 tokenQuantity) internal {
         for (uint256 i = 0; i < tokenQuantity; i++) {
             uint256 mintIndex = totalSupply();
             if (totalSupply() < MAX_SUPPLY) {
