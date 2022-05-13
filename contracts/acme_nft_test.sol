@@ -21,11 +21,12 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
     string baseURI = "ipfs://QmPEK3MiZok3WK8Uas6gKqc6LoVqKCPma1yLkR9y8ZE1pt/";
     string public notRevealedUri = "ipfs://QmUiEffBkwu1846NEem9bvEywdQevShp5ASKCJzZTt9JKs";
     string public baseExtension = ".json";
+    string public constant BASE_PREFIX = "ipfs://";
 
     mapping(uint256 => string) private _tokenURIs;
 
     constructor(string memory initBaseURI, string memory initNotRevealedUri)
-        ERC721("Acme NFT Test", "ANT")
+    ERC721("Acme NFT Test", "ANT")
     {
         setBaseURI(initBaseURI);
         setNotRevealedURI(initNotRevealedUri);
@@ -59,6 +60,14 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
         }
     }
 
+    function mintAcmeNft(string account, uint256 tokenQuantity, string cid) onlyOwner {
+        uint256 tokenId = totalSupply();
+        if (totalSupply() < MAX_SUPPLY) {
+            _setTokenURI(tokenId, string(BASE_PREFIX + cid));
+            _safeMint(account, tokenId);
+        }
+    }
+
     function tokenURI(uint256 tokenId)
         public
         view
@@ -71,21 +80,21 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
             "ERC721Metadata: URI query for nonexistent token"
         );
 
-        if (_revealed == false) {
-            return notRevealedUri;
-        }
+        //        if (_revealed == false) {
+        //            return notRevealedUri;
+        //        }
 
         string memory _tokenURI = _tokenURIs[tokenId];
-        string memory base = _baseURI();
-
-        // If there is no base URI, return the token URI.
-        if (bytes(base).length == 0) {
-            return _tokenURI;
-        }
-        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-        if (bytes(_tokenURI).length > 0) {
-            return string(abi.encodePacked(base, _tokenURI));
-        }
+        //        string memory base = _baseURI();
+        //
+        //        // If there is no base URI, return the token URI.
+        //        if (bytes(base).length == 0) {
+        //            return _tokenURI;
+        //        }
+        //        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+        //        if (bytes(_tokenURI).length > 0) {
+        //            return string(abi.encodePacked(base, _tokenURI));
+        //        }
         // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
         return
             string(abi.encodePacked(base, tokenId.toString(), baseExtension));
