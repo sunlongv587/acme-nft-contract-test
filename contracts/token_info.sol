@@ -1,7 +1,14 @@
+// Contract based on https://docs.openzeppelin.com/contracts/3.x/erc721
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
 contract TokenInfo {
+
+    constructor(address _addr, string memory _name, uint256 _amount) public {
+        addr = _addr;
+        name = _name;
+        amount = _amount;
+    }
 
     address public addr;
 
