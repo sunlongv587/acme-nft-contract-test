@@ -27,7 +27,10 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
     uint256 public constant MAX_SUPPLY = 100000;
 
     string baseURI = "ipfs://QmPEK3MiZok3WK8Uas6gKqc6LoVqKCPma1yLkR9y8ZE1pt/";
+
     uint256 public totalBurned = 0;
+    // id 发号器
+    uint256 public idIncreaser = 0;
 
     mapping(uint256 => string) private _tokenURIs;
 
@@ -40,7 +43,7 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
     mapping(address => uint256[]) private addressAndTokenIds;
 
     constructor(string memory initBaseURI)
-    ERC721("Acme NFT Test02", "ANT")
+    ERC721("Acme NFT Test03", "ANT3")
     {
         setBaseURI(initBaseURI);
     }
@@ -66,7 +69,7 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
             // 将用户授权的代币 转账 到 合约 账户
             require(ERC20(contractAddress).transferFrom(msg.sender, address(this), tokenInfos[contractAddress].amount), "Transfer failed.");
         }
-        // 使用seed的属性铸造acme
+        // 使用seed的属性铸造acme，tokenuri 不知道怎么办
         _mintAcmeMeta(tokenInfos, contractAddresses);
         // buru seed
         _burnNFT(tokenId);
@@ -81,26 +84,53 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
     function _burnNFT(uint256 tokenId) internal {
         require(_exists(tokenId), "Not exists token id");
         super._burn(tokenId);
-        // 判断字符串非空
-        if (bytes(_tokenURIs[tokenId]).length != 0) {
-            delete _tokenURIs[tokenId];
+    }
+
+     function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override(ERC721) {
+        super._afterTokenTransfer(from, to, tokenId);
+        if (from == address(0)) {
+            // mint
+            _setAddressAndTokenId(to, tokenId);
+
         }
-        // 删除 type
-        delete tokenIdAndTypeMap[tokenId];
-        // 删除 合约地址数组
-        delete tokenIdAndAddressesMap[tokenId];
-        // todo 删除 代币信息map
-        // tokenIdAndInfosMap[tokenId] = 0x0;
+        if (to == address(0)) {
+            // burn
+            if (bytes(_tokenURIs[tokenId]).length != 0) {
+               delete _tokenURIs[tokenId];
+            }
+            _removeFromAddressAndTokenIds(from, tokenId);
+            // 删除 type
+            delete tokenIdAndTypeMap[tokenId];
+            // 删除 合约地址数组
+            delete tokenIdAndAddressesMap[tokenId];
+        }
+    }
+
+    function _removeFromAddressAndTokenIds(address addr, uint256 tokenId) internal {
+        uint256[] memory tokenIds = addressAndTokenIds[addr];
+        uint256[] memory newTokenIds = new uint256[](tokenIds.length - 1);
+        uint256 j = 0;
+        for (uint i = 0; i < tokenIds.length; i++)  {
+            if (tokenIds[i] != tokenId) {
+                newTokenIds[j] = tokenIds[i];
+                j++;
+            }
+        }
+        addressAndTokenIds[addr] = newTokenIds;
     }
 
     function _mintAcmeMeta(mapping(address => TokenInfo) storage tokenInfos, address[] memory addresses) internal {
-        uint256 tokenId = totalSupply() + totalBurned;
+        uint256 tokenId = idIncreaser++;
         if (totalSupply() < MAX_SUPPLY) {
-            // uri 怎么办？没有提前生成的话，就只能先给个固定的
+            // todo uri 怎么办？没有提前生成的话，就只能先给个固定的
             setTokenURI(tokenId, baseURI);
             setTokenType(tokenId, TYPE_ACME);
             setTokenInfosByMap(tokenId, tokenInfos, addresses);
-            _setAddressAndTokenId(msg.sender, tokenId);
+            // _setAddressAndTokenId(msg.sender, tokenId);
             _safeMint(msg.sender, tokenId);
         }
 
@@ -171,24 +201,22 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
 
     // owner 调用的铸造方法
     function _mintNFT(string memory uri, uint tokenType, TokenInfo[] memory tokenInfos) internal {
-        uint256 tokenId = totalSupply() + totalBurned;
+        uint256 tokenId = idIncreaser++;
         if (totalSupply() < MAX_SUPPLY) {
             setTokenURI(tokenId, uri);
             setTokenType(tokenId, tokenType);
             setTokenInfos(tokenId, tokenInfos);
-            _setAddressAndTokenId(msg.sender, tokenId);
             _safeMint(msg.sender, tokenId);
         }
     }
 
     // owner 调用的铸造方法
     function _mintNFT(address to, string memory uri, uint tokenType, TokenInfo[] memory tokenInfos) internal {
-        uint256 tokenId = totalSupply() + totalBurned;
+        uint256 tokenId = idIncreaser++;
         if (totalSupply() < MAX_SUPPLY) {
             setTokenURI(tokenId, uri);
             setTokenType(tokenId, tokenType);
             setTokenInfos(tokenId, tokenInfos);
-            _setAddressAndTokenId(to, tokenId);
             _mint(to, tokenId);
         }
     }
@@ -200,7 +228,6 @@ contract AcmeNftTest is ERC721Enumerable, Ownable {
             setTokenURI(tokenId, uri);
             setTokenType(tokenId, tokenType);
             setTokenInfos(tokenId, tokenInfos);
-            _setAddressAndTokenId(to, tokenId);
             _mint(to, tokenId);
         }
     }
